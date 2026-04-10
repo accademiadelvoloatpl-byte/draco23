@@ -265,29 +265,15 @@
 	</div>
 
   <div class="row" style="margin-top:16px;justify-content:flex-start">
-	
-	<!-- <button class="secondary" onclick="next()">Next</button> -->
-	<!-- <button id="btnShow"  class="secondary" onclick="checkCurrent()">Check</button> -->
-	<button id="btnShow"  onclick="checkCurrent()">Check/Next</button>
+	<button id="btnShow" onclick="checkCurrent()">Check/Next</button>
+	<!-- <button class="btnShow"  onclick="checkCurrent()">Check/Next</button> -->	
+	<button class="secondary" onclick="next()">Next</button>
 	<button class="secondary" onclick="prev()">Previous</button>
-    <!-- <button id="btnShow"  class="secondary" onclick="showSolution()">Check</button> -->
 	<button id="btnCheck" class="secondary" onclick="checkCurrent()" style="display:none;">Controlla risposta </button>
 
-	
-	
 	<div style="flex:1 1 auto"></div>
 	<button class="secondary" onclick="finish()">Finish</button>
-	<button id="btnNew"  class="secondary" onclick="location.reload()">Menu</button>
-	
-	<!--
-    <button class="secondary" onclick="prev()">← Indietro</button>
-    <button class="secondary" onclick="next()">Avanti →</button>
-    
-    <button id="btnShow"  class="secondary" onclick="showSolution()">Mostra soluzione</button>
-	<button id="btnNew"  class="secondary" onclick="location.reload()">Torna al menù</button>
-    <div style="flex:1 1 auto"></div>
-    <button onclick="finish()">Consegna</button>
-	-->
+	<button id="btnNew" class="secondary" onclick="location.reload()">Menu</button>
   </div>
   <h3 id="timer" class="hidden"></h3>
 </section>
