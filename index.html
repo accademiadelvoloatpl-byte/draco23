@@ -2021,7 +2021,7 @@ function render(){
   document.getElementById("bar").style.width=((idx+1)/quiz.length*100)+"%";
 }
 
-function reload() { if (confirm("Confermi di voler tornare al menù pricilare?")) { location.reload(); } else { console.log("Operazione annullata"); } }
+function reload() { if (confirm("Confermi di voler tornare al menù principale?")) { location.reload(); } else { console.log("Operazione annullata"); } }
 function finish() { if (confirm("Confermi di voler terminare la sezione di studio?")) { completed(); } else { console.log("Operazione annullata"); } }
 
 function next(){ if(idx<quiz.length-1){ idx++; render(); } }
