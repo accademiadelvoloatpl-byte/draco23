@@ -288,7 +288,7 @@
 
 	<div style="flex:1 1 auto"></div>
 	<button class="secondary" onclick="finish()">Finish</button>
-	<button id="btnNew" class="secondary" onclick="location.reload()">Menu</button>
+	<button id="btnNew" class="secondary" onclick="reload()">Menu</button>
   </div>
   <h3 id="timer" class="hidden"></h3>
 </section>
@@ -298,7 +298,7 @@
   <p id="score"></p>
   <div id="review"></div>
   <div class="row" style="margin-top:16px">
-    <button onclick="location.reload()">Torna al menù</button>
+    <button onclick="reload()">Torna al menù</button>
     <button id="btnRepeatWrong" class="secondary hidden" onclick="repeatWrong()">Ripeti solo le sbagliate</button>
   </div>
 </section>
@@ -2021,13 +2021,16 @@ function render(){
   document.getElementById("bar").style.width=((idx+1)/quiz.length*100)+"%";
 }
 
+function reload() { if (confirm("Confermi di voler tornare al menù pricilare?")) { location.reload(); } else { console.log("Operazione annullata"); } }
+function finish() { if (confirm("Confermi di voler terminare la sezione di studio?")) { completed(); } else { console.log("Operazione annullata"); } }
+
 function next(){ if(idx<quiz.length-1){ idx++; render(); } }
 function prev(){ if(idx>0){ idx--; render(); } }
 function checkCurrent_Old(){ const fb=document.getElementById("feedback"); const q=quiz[idx]; const sel=answers[idx]; if(sel==null){ fb.textContent="Seleziona una risposta."; fb.style.color="#8a6d3b"; return; } if(sel===q.correct){ fb.textContent="✔ Risposta corretta"; fb.style.color="var(--ok)"; } else { const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✘ Risposta errata. Corretta: <strong>${right}</strong>`; fb.style.color="var(--err)"; } }
 function checkCurrent_Correct(){ const fb=document.getElementById("feedback"); const q=quiz[idx]; const sel=answers[idx]; if(sel==null) { const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✘ Risposta errata. Corretta: <strong>${right}</strong>`; fb.style.color="var(--err)";return; } if(sel===q.correct){ fb.textContent="✔ Risposta corretta"; fb.style.color="var(--ok)"; } else { const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✘ Risposta errata. Corretta: <strong>${right}</strong>`; fb.style.color="var(--err)"; } }
 function checkCurrent() { const fb=document.getElementById("feedback"); const q=quiz[idx]; const sel=answers[idx]; if(fb.textContent!="") { if(idx<quiz.length-1) { idx++; render(); } return; } if(sel==null) { const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✘ Risposta errata. Corretta: <strong>${right}</strong>`; fb.style.color="var(--err)"; return; } if(sel===q.correct) { fb.textContent="✔ Risposta corretta"; fb.style.color="var(--ok)"; } else { const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✘ Risposta errata. Corretta: <strong>${right}</strong>`; fb.style.color="var(--err)"; } }
 function showSolution(){ const fb=document.getElementById("feedback"); const q=quiz[idx]; const right=`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}`; fb.innerHTML=`✔ Soluzione: <strong>${right}</strong>`; fb.style.color="var(--ok)"; }
-function finish(){
+function completed(){
   timerOn=false; document.getElementById("exam").classList.add("hidden"); document.getElementById("result").classList.remove("hidden");
   let correct=0; const wrongList=[]; quiz.forEach((q,i)=>{ if(answers[i]===q.correct) correct++; else wrongList.push({ n:q.number??(i+1), q:q.question||'', your: (answers[i]!=null? `${String.fromCharCode(65+answers[i])}) ${q.options?.[answers[i]]||''}` : "—"), right:`${String.fromCharCode(65+(q.correct??0))}) ${q.options?.[q.correct??0]||''}` }); });
   const total=quiz.length, pct=Math.round(correct/total*100), passed=pct>=75;
