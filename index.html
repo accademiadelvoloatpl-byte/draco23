@@ -2066,6 +2066,18 @@ function goToQuestionByNumber() {
   render();
   updateQuestionNav();
 }
+	
+document.addEventListener("DOMContentLoaded", function () {
+  const gotoInput = document.getElementById("gotoInput");
+  if (!gotoInput) return;
+
+  gotoInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      goToQuestionByNumber();
+    }
+  });
+});	
 
 </script>
 </div>
