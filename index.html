@@ -2031,8 +2031,6 @@ function begin(title){
   document.getElementById("timer").classList.toggle("hidden",!timerOn);
   document.getElementById("btnCheck").classList.toggle("hidden",!allowInstantCheck);
   document.getElementById("btnShow").classList.toggle("hidden",!allowInstantCheck);
-  
-    
   render();
 }
 function startTimer(){ const t=document.getElementById("timer"); (function tick(){ if(!timerOn) return; const m=Math.floor(timeLeft/60), s=timeLeft%60; t.textContent=`Tempo residuo: ${m}m ${s}s`; if(timeLeft<=0){ finish(); return; } timeLeft--; setTimeout(tick,1000); })(); }
