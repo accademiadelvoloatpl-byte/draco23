@@ -280,14 +280,12 @@
 	
   <div class="row" style="margin-top:16px;justify-content:flex-start">
 	<button id="btnShow" onclick="checkCurrent()">Check/Next</button>
-	<!-- <button class="btnShow"  onclick="checkCurrent()">Check/Next</button> -->	
 	<button class="secondary" onclick="next()">Next</button>
 	<button class="secondary" onclick="prev()">Previous</button>
-	<button class="secondary" id="btnSpeak" onclick="speakQA()">Read</button> 
-	<button id="btnCheck" class="secondary" onclick="checkCurrent()" style="display:none;">Controlla risposta </button>
+	<button class="secondary" id="btnSpeak" onclick="speakQA()">Read</button>
+	<button id="btnCheck" class="secondary" onclick="checkCurrent()" style="display:none;">Check Answer</button>
 
 	<div style="flex:1 1 auto"></div>
-	<!-- <button class="secondary" id="btnSpeak" onclick="speakQA()">Read</button><div style="flex:1 1 auto"></div> -->
 	<button class="secondary" onclick="finish()">Finish</button>						
 	<button id="btnNew" class="secondary" onclick="reload()">Menu</button>
   </div>
@@ -2125,7 +2123,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.speechSynthesis?.cancel();
     speaking = false;
     const b = document.getElementById('btnSpeak');
-    if(b){ b.classList.remove('speaking'); b.textContent = 'Leggi a voce alta'; }
+    if(b){ b.classList.remove('speaking'); b.textContent = 'Read'; }
   }
 
   window.speakQA = function(){
@@ -2150,12 +2148,12 @@ document.addEventListener("DOMContentLoaded", function () {
     utterances.forEach(u => { if(it) u.voice = it; u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0; });
 
     const b = document.getElementById('btnSpeak');
-    if(b){ b.classList.add('speaking'); b.textContent = 'Stop lettura'; }
+    if(b){ b.classList.add('speaking'); b.textContent = 'Stop Read'; }
     speaking = true;
 
     utterances.forEach((u, i) => {
       if(i === utterances.length-1){
-        u.addEventListener('end', () => { speaking = false; if(b){ b.classList.remove('speaking'); b.textContent = 'Leggi a voce alta'; } });
+        u.addEventListener('end', () => { speaking = false; if(b){ b.classList.remove('speaking'); b.textContent = 'Read'; } });
       }
       window.speechSynthesis.speak(u);
     });
