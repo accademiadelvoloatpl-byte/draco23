@@ -2166,7 +2166,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Stop TTS when navigating to prev/next question
   window.addEventListener('click', (e)=>{
-    if(e.target && (e.target.getAttribute('onclick')==='next()' || e.target.getAttribute('onclick')==='prev()')){
+    if(e.target && (e.target.getAttribute('onclick')==='finish()' || e.target.getAttribute('onclick')==='reload()' || e.target.getAttribute('onclick')==='goToQuestionByNumber()' || e.target.getAttribute('onclick')==='checkCurrent()' || e.target.getAttribute('onclick')==='next()' || e.target.getAttribute('onclick')==='prev()')){
       cancelSpeech();
     }
   });
