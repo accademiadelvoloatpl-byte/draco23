@@ -186,7 +186,6 @@
 	  font-size: 12px;
 	  font-weight: 600;
 	}
-	
 	#examTitle {
 	  font-size: 18px;
 	  font-weight: 600;
@@ -200,6 +199,9 @@
 	.muted {
 	  color: var(--muted);
 	}
+	
+	/* TTS button state */
+	#btnSpeak.speaking{ background: var(--ok); color:#fff; }																 
 </style>
 </head>
 <body>
@@ -207,7 +209,6 @@
 <header>
   <h1>Simulatore Esame PPL</h1>
 </header>
-
 <!-- (il resto del markup è identico al File B: menu, exam, result) -->
 <section id="menu" class="card">
   <h2>Seleziona modalità</h2>
@@ -220,7 +221,7 @@
     <input id="fullTimer" type="number" min="0" max="180" value="45" style="width:90px" title="0 = nessun timer">
     <button onclick="startFullExam()">Avvia simulazione completa</button>
   </div>
-
+  
   <h3 style="margin-top:1.6rem">B) Seleziona materia</h3>
   <div class="row">
     <label for="subjectSel">Materia:</label>
@@ -234,7 +235,6 @@
 	  <option   		value="HPL">HPL – Prestazioni e Limitazioni Umane</option>		<!-- OK --> -
 	  <option selected	value="NAV">NAV – Navigazione</option>							<!-- OK --> 		
 	  <option 			value="FPP">FPP – Prestazioni in Volo e Pianificazione</option> <!-- OK --> -
-	  
       <!--
       <option 			value="ENF">ENF – Fonia Inglese</option>
 	  -->
@@ -272,13 +272,12 @@
 	  <div id="feedback"></div>
 	</div>
 	
-	
 	<div class="row" style="margin-bottom:12px; gap:8px; align-items:center;">
 	  <label class="muted">Vai alla domanda n°</label>
 	  <input id="gotoInput" type="number" min="1" style="width:90px">
 	  <button class="secondary" onclick="goToQuestionByNumber()">Vai</button>
 	</div>
-
+	
   <div class="row" style="margin-top:16px;justify-content:flex-start">
 	<button id="btnShow" onclick="checkCurrent()">Check/Next</button>
 	<!-- <button class="btnShow"  onclick="checkCurrent()">Check/Next</button> -->	
@@ -287,7 +286,8 @@
 	<button id="btnCheck" class="secondary" onclick="checkCurrent()" style="display:none;">Controlla risposta </button>
 
 	<div style="flex:1 1 auto"></div>
-	<button class="secondary" onclick="finish()">Finish</button>
+	<button class="secondary" id="btnSpeak" onclick="speakQA()">Leggi a voce alta</button><div style="flex:1 1 auto"></div>													
+	<button class="secondary" onclick="finish()">Finish</button>						
 	<button id="btnNew" class="secondary" onclick="reload()">Menu</button>
   </div>
   <h3 id="timer" class="hidden"></h3>
@@ -1986,7 +1986,6 @@ const DB = {
 	{ number: 197,	correct: 2, image: "", 					question: "Cosa potrebbe rallentare la velocità del vento al suolo?", options: ["La Superficie del mare", "Una superfice desertica senza alberi", "Una superficie in pianura con alberi e vegetazione", "Una superfice montuosa con alberi"] }
   ]  
 };
-
 // ====== motore identico al file B (stesse funzioni) ======
 const PASS_MARK=75;
 const IMG_BASE_FILE = "";
@@ -2103,8 +2102,76 @@ document.addEventListener("DOMContentLoaded", function () {
       goToQuestionByNumber();
     }
   });
-});	
+});
 
+// ===== Text-To-Speech (Web Speech API) =====
+(function(){
+  let speaking = false;
+  let utterances = [];
+
+  function buildText(){
+    const q = document.getElementById('qtext')?.innerText || '';
+    const answers = Array.from(document.querySelectorAll('#answers .answer'))
+      .map((el, idx) => {
+        // Try to read label text inside answer (supports input+label or plain text)
+        const txt = el.innerText || '';
+        return `Opzione ${idx+1}: ${txt}`;
+      });
+    return [`Domanda: ${q}`].concat(answers).join('. ');
+  }
+
+  function cancelSpeech(){
+    window.speechSynthesis?.cancel();
+    speaking = false;
+    const b = document.getElementById('btnSpeak');
+    if(b){ b.classList.remove('speaking'); b.textContent = 'Leggi a voce alta'; }
+  }
+
+  window.speakQA = function(){
+    if(!('speechSynthesis' in window)){
+      alert('La sintesi vocale non è supportata da questo browser. Prova con Chrome, Edge o Android.');
+      return;
+    }
+    if(speaking){
+      cancelSpeech();
+      return;
+    }
+    const text = buildText();
+    if(!text.trim()){ return; }
+
+    // Split text into manageable chunks
+    const chunks = text.match(/.{1,180}([\.!?]|$)/g) || [text];
+    utterances = chunks.map(c => new SpeechSynthesisUtterance(c));
+
+    // Voice (prefer Italian if available)
+    const voices = window.speechSynthesis.getVoices();
+    const it = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('it'));
+    utterances.forEach(u => { if(it) u.voice = it; u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0; });
+
+    const b = document.getElementById('btnSpeak');
+    if(b){ b.classList.add('speaking'); b.textContent = 'Stop lettura'; }
+    speaking = true;
+
+    utterances.forEach((u, i) => {
+      if(i === utterances.length-1){
+        u.addEventListener('end', () => { speaking = false; if(b){ b.classList.remove('speaking'); b.textContent = 'Leggi a voce alta'; } });
+      }
+      window.speechSynthesis.speak(u);
+    });
+  };
+
+  // Handle voice list async loading in some browsers
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged = function(){};
+  }
+
+  // Stop TTS when navigating to prev/next question
+  window.addEventListener('click', (e)=>{
+    if(e.target && (e.target.getAttribute('onclick')==='next()' || e.target.getAttribute('onclick')==='prev()')){
+      cancelSpeech();
+    }
+  });
+})();
 </script>
 </div>
 </body>
